@@ -33,7 +33,7 @@ class Hyperlink extends Component {
     let _this = this;
     let linkPromises = [];
 
-    links.forEach(function(link){
+    this.links.forEach(function(link){
       linkPromises.push(LinkPreview.getPreview(link.url));
     });
 

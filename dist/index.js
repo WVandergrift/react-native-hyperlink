@@ -68,7 +68,7 @@ var Hyperlink = function (_Component) {
       var _this = this;
       var linkPromises = [];
 
-      links.forEach(function (link) {
+      this.links.forEach(function (link) {
         linkPromises.push(_reactNativeLinkPreview2.default.getPreview(link.url));
       });
 
