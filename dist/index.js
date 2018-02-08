@@ -58,6 +58,12 @@ var Hyperlink = function (_Component) {
       this.linkifyIt = linkify;
     }
   }, {
+    key: 'componentDidMount',
+    value: function componentDidMount() {
+      // Send any parsed links to the parent
+      this.props.onLinksProcessed(this.links);
+    }
+  }, {
     key: 'render',
     value: function render() {
       var viewProps = _objectWithoutProperties(this.props, []);
@@ -132,8 +138,7 @@ var Hyperlink = function (_Component) {
             text
           ));
         });
-        // Send any parsed links to the parent
-        this.props.onLinkChanged(this.links);
+
         elements.push(component.props.children.substring(_lastIndex, component.props.children.length));
         return _react2.default.cloneElement(component, componentProps, elements);
       } catch (err) {
@@ -185,7 +190,7 @@ Hyperlink.propTypes = {
   linkText: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
   onPress: _propTypes2.default.func,
   onLongPress: _propTypes2.default.func,
-  onLinkChanged: _propTypes2.default.func
+  onLinksProcessed: _propTypes2.default.func
 };
 
 var _class = function (_Component2) {
