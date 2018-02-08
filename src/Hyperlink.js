@@ -27,6 +27,11 @@ class Hyperlink extends Component {
     this.linkifyIt = linkify
   }
 
+  componentDidMount() {
+      // Send any parsed links to the parent
+      this.props.onLinksProcessed(this.links);
+  }
+
   render() {
     const { ...viewProps } = this.props
     delete viewProps.onPress
@@ -96,8 +101,7 @@ class Hyperlink extends Component {
           </Text>
         )
       })
-      // Send any parsed links to the parent
-      this.props.onLinkChanged(this.links);
+
       elements.push(component.props.children.substring(_lastIndex, component.props.children.length))
       return React.cloneElement(component, componentProps, elements)
     } catch (err) {
@@ -137,7 +141,7 @@ Hyperlink.propTypes = {
   ]),
   onPress: PropTypes.func,
   onLongPress: PropTypes.func,
-  onLinkChanged: PropTypes.func
+  onLinksProcessed: PropTypes.func
 }
 
 export default class extends Component {
