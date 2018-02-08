@@ -44,6 +44,7 @@ var Hyperlink = function (_Component) {
     _this.linkify = _this.linkify.bind(_this);
     _this.parse = _this.parse.bind(_this);
     _this.linkifyIt = props.linkify || require('linkify-it')();
+    _this.links = [];
     return _this;
   }
 
@@ -110,6 +111,9 @@ var Hyperlink = function (_Component) {
           _lastIndex = lastIndex;
           if (_this2.props.linkText) text = typeof _this2.props.linkText === 'function' ? _this2.props.linkText(url) : _this2.props.linkText;
 
+          // Add the parsed link to our links array
+          _this2.links.push({ url: url, text: text });
+
           if (OS !== 'web') {
             componentProps.onLongPress = function () {
               return _this2.props.onLongPress && _this2.props.onLongPress(url, text);
@@ -128,6 +132,8 @@ var Hyperlink = function (_Component) {
             text
           ));
         });
+        // Send any parsed links to the parent
+        this.props.onLinkChanged(this.links);
         elements.push(component.props.children.substring(_lastIndex, component.props.children.length));
         return _react2.default.cloneElement(component, componentProps, elements);
       } catch (err) {
@@ -178,7 +184,8 @@ Hyperlink.propTypes = {
   linkStyle: textPropTypes.style,
   linkText: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
   onPress: _propTypes2.default.func,
-  onLongPress: _propTypes2.default.func
+  onLongPress: _propTypes2.default.func,
+  onLinkChanged: _propTypes2.default.func
 };
 
 var _class = function (_Component2) {

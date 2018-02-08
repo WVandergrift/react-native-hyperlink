@@ -20,6 +20,7 @@ class Hyperlink extends Component {
     this.linkify = this.linkify.bind(this)
     this.parse = this.parse.bind(this)
     this.linkifyIt = props.linkify || require('linkify-it')()
+    this.links = [];
   }
 
   componentWillReceiveProps ({ linkify = require('linkify-it')() } = {}) {
@@ -76,6 +77,9 @@ class Hyperlink extends Component {
           text = typeof this.props.linkText === 'function'
               ? this.props.linkText(url)
               : this.props.linkText
+        
+        // Add the parsed link to our links array
+        this.links.push({ url: url, text: text });
 
         if (OS !== 'web') {
           componentProps.onLongPress = () => this.props.onLongPress && this.props.onLongPress(url, text)
@@ -92,6 +96,8 @@ class Hyperlink extends Component {
           </Text>
         )
       })
+      // Send any parsed links to the parent
+      this.props.onLinkChanged(this.links);
       elements.push(component.props.children.substring(_lastIndex, component.props.children.length))
       return React.cloneElement(component, componentProps, elements)
     } catch (err) {
@@ -131,6 +137,7 @@ Hyperlink.propTypes = {
   ]),
   onPress: PropTypes.func,
   onLongPress: PropTypes.func,
+  onLinkChanged: PropTypes.func
 }
 
 export default class extends Component {
