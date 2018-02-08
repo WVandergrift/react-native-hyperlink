@@ -45,7 +45,7 @@ class Hyperlink extends Component {
       });
 
       // Notify the parent component that we've processed all found links
-      this.props.onLinksProcessed(this.links);
+      _this.props.onLinksProcessed(_this.links);
     }, function(error){
       console.error("Failed to get information for links");
     });
