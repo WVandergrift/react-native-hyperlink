@@ -10,6 +10,7 @@ import {
 	Linking, 
 	Platform
 } from 'react-native'
+import LinkPreview from 'react-native-link-preview';
 
 const textPropTypes = Text.propTypes || {}
 const { OS } = Platform
@@ -28,8 +29,26 @@ class Hyperlink extends Component {
   }
 
   componentDidMount() {
-      // Send any parsed links to the parent
+    // Create a promise to get information for each link
+    let _this = this;
+    let linkPromises = [];
+
+    links.forEach(function(link){
+      linkPromises.push(LinkPreview.getPreview(link.url));
+    });
+
+    // Run all link promises
+    Promise.all(linkPromises).then(function(results){
+      // Successfully retrieved information for all links.
+      results.forEach(function(linkData, index){
+        Object.assign(_this.links[index], linkData);
+      });
+
+      // Notify the parent component that we've processed all found links
       this.props.onLinksProcessed(this.links);
+    }, function(error){
+      console.error("Failed to get information for links");
+    });
   }
 
   render() {

@@ -18,6 +18,10 @@ var _propTypes2 = _interopRequireDefault(_propTypes);
 
 var _reactNative = require('react-native');
 
+var _reactNativeLinkPreview = require('react-native-link-preview');
+
+var _reactNativeLinkPreview2 = _interopRequireDefault(_reactNativeLinkPreview);
+
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 function _objectWithoutProperties(obj, keys) { var target = {}; for (var i in obj) { if (keys.indexOf(i) >= 0) continue; if (!Object.prototype.hasOwnProperty.call(obj, i)) continue; target[i] = obj[i]; } return target; }
@@ -39,13 +43,13 @@ var Hyperlink = function (_Component) {
   function Hyperlink(props) {
     _classCallCheck(this, Hyperlink);
 
-    var _this = _possibleConstructorReturn(this, (Hyperlink.__proto__ || Object.getPrototypeOf(Hyperlink)).call(this, props));
+    var _this2 = _possibleConstructorReturn(this, (Hyperlink.__proto__ || Object.getPrototypeOf(Hyperlink)).call(this, props));
 
-    _this.linkify = _this.linkify.bind(_this);
-    _this.parse = _this.parse.bind(_this);
-    _this.linkifyIt = props.linkify || require('linkify-it')();
-    _this.links = [];
-    return _this;
+    _this2.linkify = _this2.linkify.bind(_this2);
+    _this2.parse = _this2.parse.bind(_this2);
+    _this2.linkifyIt = props.linkify || require('linkify-it')();
+    _this2.links = [];
+    return _this2;
   }
 
   _createClass(Hyperlink, [{
@@ -60,8 +64,26 @@ var Hyperlink = function (_Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
-      // Send any parsed links to the parent
-      this.props.onLinksProcessed(this.links);
+      // Create a promise to get information for each link
+      var _this = this;
+      var linkPromises = [];
+
+      links.forEach(function (link) {
+        linkPromises.push(_reactNativeLinkPreview2.default.getPreview(link.url));
+      });
+
+      // Run all link promises
+      Promise.all(linkPromises).then(function (results) {
+        // Successfully retrieved information for all links.
+        results.forEach(function (linkData, index) {
+          Object.assign(_this.links[index], linkData);
+        });
+
+        // Notify the parent component that we've processed all found links
+        this.props.onLinksProcessed(this.links);
+      }, function (error) {
+        console.error("Failed to get information for links");
+      });
     }
   }, {
     key: 'render',
@@ -93,7 +115,7 @@ var Hyperlink = function (_Component) {
   }, {
     key: 'linkify',
     value: function linkify(component) {
-      var _this2 = this;
+      var _this3 = this;
 
       if (!this.linkifyIt.pretest(component.props.children) || !this.linkifyIt.test(component.props.children)) return component;
 
@@ -115,14 +137,14 @@ var Hyperlink = function (_Component) {
           var nonLinkedText = component.props.children.substring(_lastIndex, index);
           nonLinkedText && elements.push(nonLinkedText);
           _lastIndex = lastIndex;
-          if (_this2.props.linkText) text = typeof _this2.props.linkText === 'function' ? _this2.props.linkText(url) : _this2.props.linkText;
+          if (_this3.props.linkText) text = typeof _this3.props.linkText === 'function' ? _this3.props.linkText(url) : _this3.props.linkText;
 
           // Add the parsed link to our links array
-          _this2.links.push({ url: url, text: text });
+          _this3.links.push({ url: url, text: text });
 
           if (OS !== 'web') {
             componentProps.onLongPress = function () {
-              return _this2.props.onLongPress && _this2.props.onLongPress(url, text);
+              return _this3.props.onLongPress && _this3.props.onLongPress(url, text);
             };
           }
 
@@ -130,9 +152,9 @@ var Hyperlink = function (_Component) {
             _reactNative.Text,
             _extends({}, componentProps, {
               key: url + index,
-              style: [component.props.style, _this2.props.linkStyle],
+              style: [component.props.style, _this3.props.linkStyle],
               onPress: function onPress() {
-                return _this2.props.onPress && _this2.props.onPress(url, text);
+                return _this3.props.onPress && _this3.props.onPress(url, text);
               }
             }),
             text
@@ -148,7 +170,7 @@ var Hyperlink = function (_Component) {
   }, {
     key: 'parse',
     value: function parse(component) {
-      var _this3 = this;
+      var _this4 = this;
 
       var _component$props = component.props;
       _component$props = _component$props === undefined ? {} : _component$props;
@@ -169,13 +191,13 @@ var Hyperlink = function (_Component) {
         _child$type = _child$type === undefined ? {} : _child$type;
         var displayName = _child$type.displayName;
 
-        if (typeof child === 'string' && _this3.linkifyIt.pretest(child)) return _this3.linkify(_react2.default.createElement(
+        if (typeof child === 'string' && _this4.linkifyIt.pretest(child)) return _this4.linkify(_react2.default.createElement(
           _reactNative.Text,
           _extends({}, componentProps, { style: component.props.style }),
           child
         ));
-        if (displayName === 'Text' && !_this3.isTextNested(child)) return _this3.linkify(child);
-        return _this3.parse(child);
+        if (displayName === 'Text' && !_this4.isTextNested(child)) return _this4.linkify(child);
+        return _this4.parse(child);
       }));
     }
   }]);
@@ -199,10 +221,10 @@ var _class = function (_Component2) {
   function _class(props) {
     _classCallCheck(this, _class);
 
-    var _this4 = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
+    var _this5 = _possibleConstructorReturn(this, (_class.__proto__ || Object.getPrototypeOf(_class)).call(this, props));
 
-    _this4.handleLink = _this4.handleLink.bind(_this4);
-    return _this4;
+    _this5.handleLink = _this5.handleLink.bind(_this5);
+    return _this5;
   }
 
   _createClass(_class, [{
