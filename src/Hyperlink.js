@@ -29,6 +29,8 @@ class Hyperlink extends Component {
   }
 
   componentDidMount() {
+    if (!this.props.processLinks) { return; }
+    
     // Create a promise to get information for each link
     let _this = this;
     let linkPromises = [];
@@ -158,6 +160,7 @@ Hyperlink.propTypes = {
     PropTypes.string,
     PropTypes.func,
   ]),
+  processLinks: PropTypes.bool,
   onPress: PropTypes.func,
   onLongPress: PropTypes.func,
   onLinksProcessed: PropTypes.func

@@ -64,6 +64,10 @@ var Hyperlink = function (_Component) {
   }, {
     key: 'componentDidMount',
     value: function componentDidMount() {
+      if (!this.props.processLinks) {
+        return;
+      }
+
       // Create a promise to get information for each link
       var _this = this;
       var linkPromises = [];
@@ -210,6 +214,7 @@ Hyperlink.propTypes = {
   linkify: _propTypes2.default.object,
   linkStyle: textPropTypes.style,
   linkText: _propTypes2.default.oneOfType([_propTypes2.default.string, _propTypes2.default.func]),
+  processLinks: _propTypes2.default.bool,
   onPress: _propTypes2.default.func,
   onLongPress: _propTypes2.default.func,
   onLinksProcessed: _propTypes2.default.func
